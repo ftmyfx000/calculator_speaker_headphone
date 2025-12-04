@@ -27,39 +27,39 @@ describe('Validation Functions', () => {
         ),
         fc.string({ minLength: 1, maxLength: 20 }), // fieldName
         fc.float({ min: -1000, max: 1000, noNaN: true }), // min
-        fc.float({ min: -1000, max: 1000, noNaN: true }) // max
-      ),
-      (valueStr: string, fieldName: string, min: number, max: number) => {
-        // Ensure max > min
-        if (max <= min) {
-          return true; // Skip this test case
-        }
-        
-        // Test isNumeric
-        const numeric = isNumeric(valueStr);
-        
-        if (!numeric) {
-          // Non-numeric strings should be rejected
+        fc.float({ min: -1000, max: 1000, noNaN: true }), // max
+        (valueStr: string, fieldName: string, min: number, max: number) => {
+          // Ensure max > min
+          if (max <= min) {
+            return true; // Skip this test case
+          }
+          
+          // Test isNumeric
+          const numeric = isNumeric(valueStr);
+          
+          if (!numeric) {
+            // Non-numeric strings should be rejected
+            const error = getValidationError(valueStr, fieldName, min, max);
+            expect(error).toBe('Please enter a valid number');
+            return true;
+          }
+          
+          // For numeric values, test range validation
+          const numValue = Number(valueStr);
+          const inRange = isInRange(numValue, min, max);
           const error = getValidationError(valueStr, fieldName, min, max);
-          expect(error).toBe('Please enter a valid number');
+          
+          if (!inRange) {
+            // Out of range values should have error message
+            expect(error).toBe(`Value must be between ${min} and ${max}`);
+          } else {
+            // In range values should have no error
+            expect(error).toBeNull();
+          }
+          
           return true;
         }
-        
-        // For numeric values, test range validation
-        const numValue = Number(valueStr);
-        const inRange = isInRange(numValue, min, max);
-        const error = getValidationError(valueStr, fieldName, min, max);
-        
-        if (!inRange) {
-          // Out of range values should have error message
-          expect(error).toBe(`Value must be between ${min} and ${max}`);
-        } else {
-          // In range values should have no error
-          expect(error).toBeNull();
-        }
-        
-        return true;
-      }),
+      ),
       { numRuns: 100 }
     );
   });

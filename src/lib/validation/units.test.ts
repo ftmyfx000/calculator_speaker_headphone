@@ -24,29 +24,29 @@ describe('Unit Conversion Functions', () => {
   test('Property 16: Unit conversion round-trip consistency', () => {
     fc.assert(
       fc.property(
-        fc.float({ min: 0.001, max: 10000, noNaN: true, noDefaultInfinity: true })
+        fc.float({ min: 0.001, max: 10000, noNaN: true, noDefaultInfinity: true }),
+        (value: number) => {
+          const tolerance = 1e-10;
+          
+          // Test grams → kilograms → grams
+          const gramsRoundTrip = kilogramsToGrams(gramsToKilograms(value));
+          const gramsMatch = Math.abs(gramsRoundTrip - value) < tolerance;
+          
+          // Test kilograms → grams → kilograms
+          const kilogramsRoundTrip = gramsToKilograms(kilogramsToGrams(value));
+          const kilogramsMatch = Math.abs(kilogramsRoundTrip - value) < tolerance;
+          
+          // Test millimeters → meters → millimeters
+          const millimetersRoundTrip = metersToMillimeters(millimetersToMeters(value));
+          const millimetersMatch = Math.abs(millimetersRoundTrip - value) < tolerance;
+          
+          // Test meters → millimeters → meters
+          const metersRoundTrip = millimetersToMeters(metersToMillimeters(value));
+          const metersMatch = Math.abs(metersRoundTrip - value) < tolerance;
+          
+          return gramsMatch && kilogramsMatch && millimetersMatch && metersMatch;
+        }
       ),
-      (value: number) => {
-        const tolerance = 1e-10;
-        
-        // Test grams → kilograms → grams
-        const gramsRoundTrip = kilogramsToGrams(gramsToKilograms(value));
-        const gramsMatch = Math.abs(gramsRoundTrip - value) < tolerance;
-        
-        // Test kilograms → grams → kilograms
-        const kilogramsRoundTrip = gramsToKilograms(kilogramsToGrams(value));
-        const kilogramsMatch = Math.abs(kilogramsRoundTrip - value) < tolerance;
-        
-        // Test millimeters → meters → millimeters
-        const millimetersRoundTrip = metersToMillimeters(millimetersToMeters(value));
-        const millimetersMatch = Math.abs(millimetersRoundTrip - value) < tolerance;
-        
-        // Test meters → millimeters → meters
-        const metersRoundTrip = millimetersToMeters(metersToMillimeters(value));
-        const metersMatch = Math.abs(metersRoundTrip - value) < tolerance;
-        
-        return gramsMatch && kilogramsMatch && millimetersMatch && metersMatch;
-      }),
       { numRuns: 100, verbose: true }
     );
   });
