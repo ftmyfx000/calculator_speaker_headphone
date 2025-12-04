@@ -31,7 +31,7 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({
             {formatValue(value)}
           </span>
           {unit && value !== null && value !== undefined && !isNaN(value) && (
-            <span className="text-xs sm:text-sm text-gray-600 font-medium" aria-label="単位">
+            <span className="text-xs sm:text-sm text-gray-600 font-medium" style={{ fontFamily: 'Arial, sans-serif' }} aria-label="単位">
               {unit}
             </span>
           )}

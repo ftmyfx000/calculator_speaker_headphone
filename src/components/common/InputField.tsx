@@ -42,7 +42,7 @@ export const InputField: React.FC<InputFieldProps> = ({
           aria-describedby={error ? `${inputId}-error` : undefined}
         />
         {unit && (
-          <span className="text-xs sm:text-sm text-gray-600 font-medium min-w-[2.5rem] sm:min-w-[3rem] text-right">
+          <span className="text-xs sm:text-sm text-gray-600 font-medium min-w-[2.5rem] sm:min-w-[3rem] text-right" style={{ fontFamily: 'Arial, sans-serif' }}>
             {unit}
           </span>
         )}
