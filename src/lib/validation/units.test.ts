@@ -46,9 +46,8 @@ describe('Unit Conversion Functions', () => {
         const metersMatch = Math.abs(metersRoundTrip - value) < tolerance;
         
         return gramsMatch && kilogramsMatch && millimetersMatch && metersMatch;
-      }
-    ),
-    { numRuns: 100, verbose: true }
+      }),
+      { numRuns: 100, verbose: true }
     );
   });
 

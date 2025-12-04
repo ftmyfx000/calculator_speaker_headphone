@@ -30,7 +30,6 @@ describe('TS Parameter Calculations - Property Tests', () => {
       { numRuns: 100, verbose: true }
     );
   });
-});
 
   /**
    * Feature: speaker-calculator-webapp, Property 2: Vas calculation correctness

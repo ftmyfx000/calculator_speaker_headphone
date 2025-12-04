@@ -59,9 +59,8 @@ describe('Validation Functions', () => {
         }
         
         return true;
-      }
-    ),
-    { numRuns: 100 }
+      }),
+      { numRuns: 100 }
     );
   });
 
