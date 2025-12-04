@@ -6,7 +6,7 @@ import App from './App'
 describe('App', () => {
   it('renders the application title', () => {
     render(<App />)
-    expect(screen.getByText('スピーカー計算WEBアプリケーション')).toBeInTheDocument()
+    expect(screen.getByText('いろいろ計算シート')).toBeInTheDocument()
   })
 
   it('renders navigation menu with all calculators', () => {

@@ -11,7 +11,7 @@ export function Layout({ children }: LayoutProps) {
       <header className="bg-white shadow sticky top-0 z-10" role="banner">
         <div className="max-w-7xl mx-auto py-4 px-4 sm:py-6 sm:px-6 lg:px-8">
           <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900">
-            スピーカー計算WEBアプリケーション
+            いろいろ計算シート
           </h1>
         </div>
       </header>
