@@ -108,31 +108,74 @@ export const TSParameterCalculator: React.FC = () => {
         TSパラメータ計算機
       </h2>
 
-      <section className="bg-white rounded-lg shadow p-4 sm:p-6 mb-4 sm:mb-6" aria-labelledby="input-section-title">
-        <h3 className="text-base sm:text-lg font-semibold text-gray-800 mb-3 sm:mb-4" id="input-section-title">入力パラメータ</h3>
+      {/* F0計算セクション */}
+      <section className="bg-white rounded-lg shadow p-4 sm:p-6 mb-4 sm:mb-6" aria-labelledby="f0-section-title">
+        <h3 className="text-base sm:text-lg font-semibold text-gray-800 mb-3 sm:mb-4" id="f0-section-title">F0計算</h3>
         
-        <div className="flex items-center gap-2">
-          <InputField
-            label="Mms (振動系の質量)"
-            value={mms}
-            onChange={setMms}
-            unit="g"
-            id="mms-input"
-          />
-          <HelpTooltip content="振動系の質量。スピーカーの振動板、ボイスコイル、およびその他の可動部品の合計質量です。" />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <div>
+            <h4 className="text-sm font-medium text-gray-700 mb-2">入力値</h4>
+            <div className="flex items-center gap-2">
+              <InputField
+                label="Mms"
+                value={mms}
+                onChange={setMms}
+                unit="g"
+                id="mms-input"
+              />
+              <HelpTooltip content="振動系の質量。スピーカーの振動板、ボイスコイル、およびその他の可動部品の合計質量です。" />
+            </div>
+            <div className="flex items-center gap-2">
+              <InputField
+                label="Kms"
+                value={kms}
+                onChange={setKms}
+                unit="N/mm"
+                id="kms-input"
+              />
+              <HelpTooltip content="機械的スティフネス。スピーカーのサスペンション（スパイダーとエッジ）の硬さを表します。" />
+            </div>
+          </div>
+          
+          <div>
+            <h4 className="text-sm font-medium text-gray-700 mb-2">単位変換</h4>
+            <ResultDisplay
+              label="Mms"
+              value={parseNumeric(mms) !== null ? parseNumeric(mms)! / 1000 : null}
+              unit="kg"
+              precision={6}
+            />
+            <ResultDisplay
+              label="Kms"
+              value={parseNumeric(kms) !== null ? parseNumeric(kms)! * 1000 : null}
+              unit="N/m"
+              precision={2}
+            />
+          </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          <InputField
-            label="Kms (機械的スティフネス)"
-            value={kms}
-            onChange={setKms}
-            unit="N/mm"
-            id="kms-input"
+        <div className="border-t pt-4">
+          <FormulaDisplay
+            formula="F0 = sqrt(Kms / Mms) / (2π)"
+            variables={[
+              { symbol: 'F0', description: '共振周波数', unit: 'Hz' },
+              { symbol: 'Kms', description: '機械的スティフネス', unit: 'N/m' },
+              { symbol: 'Mms', description: '振動系の質量', unit: 'kg' },
+            ]}
           />
-          <HelpTooltip content="機械的スティフネス。スピーカーのサスペンション（スパイダーとエッジ）の硬さを表します。" />
+          <ResultDisplay
+            label="F0"
+            value={f0}
+            unit="Hz"
+            precision={4}
+          />
         </div>
+      </section>
 
+      {/* その他のパラメータ */}
+      <section className="bg-white rounded-lg shadow p-4 sm:p-6 mb-4 sm:mb-6" aria-labelledby="other-params-title">
+        <h3 className="text-base sm:text-lg font-semibold text-gray-800 mb-3 sm:mb-4" id="other-params-title">その他のパラメータ</h3>
+        
         <div className="flex items-center gap-2">
           <InputField
             label="Bl (力係数)"
@@ -189,24 +232,10 @@ export const TSParameterCalculator: React.FC = () => {
         </div>
       </section>
 
+      {/* その他の計算結果 */}
       <section className="bg-white rounded-lg shadow p-4 sm:p-6" aria-labelledby="results-section-title" aria-live="polite">
-        <h3 className="text-base sm:text-lg font-semibold text-gray-800 mb-3 sm:mb-4" id="results-section-title">計算結果</h3>
+        <h3 className="text-base sm:text-lg font-semibold text-gray-800 mb-3 sm:mb-4" id="results-section-title">その他の計算結果</h3>
         
-        <FormulaDisplay
-          formula="F0 = sqrt(Kms / Mms) / (2π)"
-          variables={[
-            { symbol: 'F0', description: '共振周波数', unit: 'Hz' },
-            { symbol: 'Kms', description: '機械的スティフネス', unit: 'N/m' },
-            { symbol: 'Mms', description: '振動系の質量', unit: 'kg' },
-          ]}
-        />
-        <ResultDisplay
-          label="F0 (共振周波数)"
-          value={f0}
-          unit="Hz"
-          precision={2}
-        />
-
         <FormulaDisplay
           formula="Vas = ρ × c² × (π × a²)² / Kms × 1000"
           variables={[
