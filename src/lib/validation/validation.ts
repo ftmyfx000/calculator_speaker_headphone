@@ -36,7 +36,7 @@ export function isInRange(value: number, min: number, max: number): boolean {
  */
 export function getValidationError(
   value: string | number,
-  fieldName: string,
+  _fieldName: string,
   min: number,
   max: number
 ): string | null {

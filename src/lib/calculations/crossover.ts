@@ -2,7 +2,7 @@
  * Crossover Network Calculations
  */
 
-import type { CrossoverInputs, CrossoverResults, CrossoverComponent } from '../types/crossover';
+import type { CrossoverInputs, CrossoverResults } from '../types/crossover';
 
 /**
  * Calculate capacitor value
