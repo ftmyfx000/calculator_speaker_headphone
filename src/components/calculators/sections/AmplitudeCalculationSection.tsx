@@ -39,6 +39,8 @@ export const AmplitudeCalculationSection: React.FC = () => {
 
   // Setter functions
   const setSpl = (value: string) => updateTSParameterState({ spl: value });
+  const setAirDensity = (value: string) => updateTSParameterState({ airDensity: value });
+  const setEffectiveRadius = (value: string) => updateTSParameterState({ effectiveRadius: value });
   const setFrequency = (value: string) => updateTSParameterState({ frequency: value });
 
   // State for calculation results
@@ -130,22 +132,22 @@ export const AmplitudeCalculationSection: React.FC = () => {
             <InputField
               label="空気密度"
               value={airDensity}
-              onChange={() => {}}
+              onChange={setAirDensity}
               unit="kg/m³"
-              id="amplitude-air-density-display"
+              id="amplitude-air-density-input"
             />
-            <HelpTooltip content="空気の密度。その他のパラメータセクションから自動的に取得されます。" />
+            <HelpTooltip content="空気の密度。標準状態（海面、20℃）では約1.29 kg/m³です。" />
           </div>
 
           <div className="flex items-center gap-2">
             <InputField
               label="有効半径"
               value={effectiveRadius}
-              onChange={() => {}}
+              onChange={setEffectiveRadius}
               unit="mm"
-              id="amplitude-effective-radius-display"
+              id="amplitude-effective-radius-input"
             />
-            <HelpTooltip content="振動板の有効半径。その他のパラメータセクションから自動的に取得されます。" />
+            <HelpTooltip content="振動板の有効半径。音を放射する実効的な半径です。" />
           </div>
 
           <div className="flex items-center gap-2">
