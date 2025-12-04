@@ -11,6 +11,16 @@ import {
   calculateInputVoltage,
 } from '../../lib/calculations/ts-parameters';
 import { useCalculatorState } from '../../contexts/CalculatorStateContext';
+import {
+  QmsCalculationSection,
+  QtsCalculationSection,
+  AmplitudeCalculationSection,
+  SPLCalculationSection,
+  FrequencyResponseSection,
+  ThinFilmResistanceSection,
+  XmaxCalculationSection,
+  OpenTubeResonanceSection,
+} from './sections';
 
 export const TSParameterCalculator: React.FC = () => {
   const { states, updateTSParameterState } = useCalculatorState();
@@ -103,13 +113,20 @@ export const TSParameterCalculator: React.FC = () => {
   }, [mms, kms, bl, re, effectiveRadius, airDensity, power]);
 
   return (
-    <div className="max-w-4xl mx-auto">
-      <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4 sm:mb-6" id="calculator-title">
+    <div className="max-w-6xl mx-auto space-y-6" role="main">
+      {/* Skip to main content link for keyboard navigation */}
+      <a
+        href="#calculator-title"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-blue-600 focus:text-white focus:rounded-md focus:shadow-lg focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+      >
+        メインコンテンツへスキップ
+      </a>
+      <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4 sm:mb-6" id="calculator-title">
         TSパラメータ計算機
-      </h2>
+      </h1>
 
       {/* F0計算セクション */}
-      <section className="bg-white rounded-lg shadow p-4 sm:p-6 mb-4 sm:mb-6" aria-labelledby="f0-section-title">
+      <section className="bg-white rounded-lg shadow p-4 sm:p-6" aria-labelledby="f0-section-title" role="region">
         <h3 className="text-base sm:text-lg font-semibold text-gray-800 mb-3 sm:mb-4" id="f0-section-title">F0計算</h3>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
@@ -172,8 +189,98 @@ export const TSParameterCalculator: React.FC = () => {
         </div>
       </section>
 
+      {/* 空気負荷質量の計算セクション */}
+      <section className="bg-white rounded-lg shadow p-4 sm:p-6" aria-labelledby="air-load-section-title" aria-live="polite" role="region">
+        <h3 className="text-base sm:text-lg font-semibold text-gray-800 mb-3 sm:mb-4" id="air-load-section-title">空気負荷質量の計算</h3>
+        
+        <FormulaDisplay
+          formula="Mair_free = (8/3) × ρ × a³ × 1000, Mair_baffle = (16/3) × ρ × a³ × 1000"
+          variables={[
+            { symbol: 'Mair', description: '空気負荷質量', unit: 'g' },
+            { symbol: 'ρ', description: '空気密度', unit: 'kg/m³' },
+            { symbol: 'a', description: '有効半径', unit: 'm' },
+          ]}
+        />
+        <ResultDisplay
+          label="空気負荷質量 (自由空間)"
+          value={airLoadMassFree}
+          unit="g"
+          precision={4}
+        />
+        <ResultDisplay
+          label="空気負荷質量 (無限バッフル)"
+          value={airLoadMassBaffle}
+          unit="g"
+          precision={4}
+        />
+      </section>
+
+      {/* 入力電圧計算セクション */}
+      <section className="bg-white rounded-lg shadow p-4 sm:p-6" aria-labelledby="voltage-section-title" aria-live="polite" role="region">
+        <h3 className="text-base sm:text-lg font-semibold text-gray-800 mb-3 sm:mb-4" id="voltage-section-title">入力電圧計算</h3>
+        
+        <FormulaDisplay
+          formula="V = sqrt(Re × P)"
+          variables={[
+            { symbol: 'V', description: '入力電圧', unit: 'V' },
+            { symbol: 'Re', description: 'DC抵抗', unit: 'Ω' },
+            { symbol: 'P', description: '入力電力', unit: 'W' },
+          ]}
+        />
+        <ResultDisplay
+          label="入力電圧"
+          value={inputVoltage}
+          unit="V"
+          precision={4}
+        />
+      </section>
+
+      {/* Vas計算セクション */}
+      <section className="bg-white rounded-lg shadow p-4 sm:p-6" aria-labelledby="vas-section-title" aria-live="polite" role="region">
+        <h3 className="text-base sm:text-lg font-semibold text-gray-800 mb-3 sm:mb-4" id="vas-section-title">Vasの計算</h3>
+        
+        <FormulaDisplay
+          formula="Vas = ρ × c² × (π × a²)² / Kms × 1000"
+          variables={[
+            { symbol: 'Vas', description: '等価コンプライアンス容積', unit: 'L' },
+            { symbol: 'ρ', description: '空気密度', unit: 'kg/m³' },
+            { symbol: 'c', description: '音速 (346.1 m/s)' },
+            { symbol: 'a', description: '有効半径', unit: 'm' },
+            { symbol: 'Kms', description: '機械的スティフネス', unit: 'N/m' },
+          ]}
+        />
+        <ResultDisplay
+          label="Vas (等価コンプライアンス容積)"
+          value={vas}
+          unit="L"
+          precision={4}
+        />
+      </section>
+
+      {/* Qes計算セクション */}
+      <section className="bg-white rounded-lg shadow p-4 sm:p-6" aria-labelledby="qes-section-title" aria-live="polite" role="region">
+        <h3 className="text-base sm:text-lg font-semibold text-gray-800 mb-3 sm:mb-4" id="qes-section-title">Qesの計算</h3>
+        
+        <FormulaDisplay
+          formula="Qes = 2π × F0 × Re × Mms / Bl²"
+          variables={[
+            { symbol: 'Qes', description: '電気的Q値' },
+            { symbol: 'F0', description: '共振周波数', unit: 'Hz' },
+            { symbol: 'Re', description: 'DC抵抗', unit: 'Ω' },
+            { symbol: 'Mms', description: '振動系の質量', unit: 'kg' },
+            { symbol: 'Bl', description: '力係数', unit: 'N/A' },
+          ]}
+        />
+        <ResultDisplay
+          label="Qes (電気的Q値)"
+          value={qes}
+          unit=""
+          precision={4}
+        />
+      </section>
+
       {/* その他のパラメータ */}
-      <section className="bg-white rounded-lg shadow p-4 sm:p-6 mb-4 sm:mb-6" aria-labelledby="other-params-title">
+      <section className="bg-white rounded-lg shadow p-4 sm:p-6" aria-labelledby="other-params-title" role="region">
         <h3 className="text-base sm:text-lg font-semibold text-gray-800 mb-3 sm:mb-4" id="other-params-title">その他のパラメータ</h3>
         
         <div className="flex items-center gap-2">
@@ -232,80 +339,29 @@ export const TSParameterCalculator: React.FC = () => {
         </div>
       </section>
 
-      {/* その他の計算結果 */}
-      <section className="bg-white rounded-lg shadow p-4 sm:p-6" aria-labelledby="results-section-title" aria-live="polite">
-        <h3 className="text-base sm:text-lg font-semibold text-gray-800 mb-3 sm:mb-4" id="results-section-title">その他の計算結果</h3>
-        
-        <FormulaDisplay
-          formula="Vas = ρ × c² × (π × a²)² / Kms × 1000"
-          variables={[
-            { symbol: 'Vas', description: '等価コンプライアンス容積', unit: 'L' },
-            { symbol: 'ρ', description: '空気密度', unit: 'kg/m³' },
-            { symbol: 'c', description: '音速 (346.1 m/s)' },
-            { symbol: 'a', description: '有効半径', unit: 'm' },
-            { symbol: 'Kms', description: '機械的スティフネス', unit: 'N/m' },
-          ]}
-        />
-        <ResultDisplay
-          label="Vas (等価コンプライアンス容積)"
-          value={vas}
-          unit="L"
-          precision={4}
-        />
+      {/* Qms計算セクション */}
+      <QmsCalculationSection />
 
-        <FormulaDisplay
-          formula="Qes = 2π × F0 × Re × Mms / Bl²"
-          variables={[
-            { symbol: 'Qes', description: '電気的Q値' },
-            { symbol: 'F0', description: '共振周波数', unit: 'Hz' },
-            { symbol: 'Re', description: 'DC抵抗', unit: 'Ω' },
-            { symbol: 'Mms', description: '振動系の質量', unit: 'kg' },
-            { symbol: 'Bl', description: '力係数', unit: 'N/A' },
-          ]}
-        />
-        <ResultDisplay
-          label="Qes (電気的Q値)"
-          value={qes}
-          unit=""
-          precision={4}
-        />
+      {/* Qts計算セクション */}
+      <QtsCalculationSection />
 
-        <FormulaDisplay
-          formula="Mair_free = (8/3) × ρ × a³ × 1000, Mair_baffle = (16/3) × ρ × a³ × 1000"
-          variables={[
-            { symbol: 'Mair', description: '空気負荷質量', unit: 'g' },
-            { symbol: 'ρ', description: '空気密度', unit: 'kg/m³' },
-            { symbol: 'a', description: '有効半径', unit: 'm' },
-          ]}
-        />
-        <ResultDisplay
-          label="空気負荷質量 (自由空間)"
-          value={airLoadMassFree}
-          unit="g"
-          precision={4}
-        />
-        <ResultDisplay
-          label="空気負荷質量 (無限バッフル)"
-          value={airLoadMassBaffle}
-          unit="g"
-          precision={4}
-        />
+      {/* 振幅の計算セクション */}
+      <AmplitudeCalculationSection />
 
-        <FormulaDisplay
-          formula="V = sqrt(Re × P)"
-          variables={[
-            { symbol: 'V', description: '入力電圧', unit: 'V' },
-            { symbol: 'Re', description: 'DC抵抗', unit: 'Ω' },
-            { symbol: 'P', description: '入力電力', unit: 'W' },
-          ]}
-        />
-        <ResultDisplay
-          label="入力電圧"
-          value={inputVoltage}
-          unit="V"
-          precision={4}
-        />
-      </section>
+      {/* 音圧の計算セクション */}
+      <SPLCalculationSection />
+
+      {/* 低音域音圧計算とグラフ表示セクション */}
+      <FrequencyResponseSection />
+
+      {/* 薄膜パターンの抵抗値計算セクション */}
+      <ThinFilmResistanceSection />
+
+      {/* ドイツのXmax計算セクション */}
+      <XmaxCalculationSection />
+
+      {/* 開管の気中共鳴周波数計算セクション */}
+      <OpenTubeResonanceSection />
     </div>
   );
 };

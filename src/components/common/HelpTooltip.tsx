@@ -49,9 +49,17 @@ export const HelpTooltip: React.FC<HelpTooltipProps> = ({
         onClick={() => setIsVisible(!isVisible)}
         onMouseEnter={() => setIsVisible(true)}
         onMouseLeave={() => setIsVisible(false)}
-        className="inline-flex items-center justify-center w-4 h-4 sm:w-5 sm:h-5 text-xs font-semibold text-blue-600 bg-blue-100 rounded-full hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 flex-shrink-0"
+        onFocus={() => setIsVisible(true)}
+        onBlur={(e) => {
+          // Only hide if focus is moving outside the tooltip
+          if (!tooltipRef.current?.contains(e.relatedTarget as Node)) {
+            setIsVisible(false);
+          }
+        }}
+        className="inline-flex items-center justify-center w-4 h-4 sm:w-5 sm:h-5 text-xs font-semibold text-blue-600 bg-blue-100 rounded-full hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 flex-shrink-0 transition-colors duration-150"
         aria-label="ヘルプ情報を表示"
         aria-expanded={isVisible}
+        aria-haspopup="true"
       >
         {children || '?'}
       </button>

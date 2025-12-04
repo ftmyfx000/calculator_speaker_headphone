@@ -110,3 +110,39 @@ export function calculateInputVoltage(re: number, power: number): number {
   // V = sqrt(Re * P)
   return Math.sqrt(re * power);
 }
+
+
+/**
+ * Calculate Qms (Mechanical Q Factor)
+ * Formula: Qms = 2π × F0 × Mms / Rms
+ * 
+ * @param f0 - Resonance frequency in Hz
+ * @param mms - Moving mass in grams (g)
+ * @param rms - Mechanical resistance in kg/s
+ * @returns Mechanical Q factor
+ */
+export function calculateQms(
+  f0: number,
+  mms: number,
+  rms: number
+): number {
+  // Convert units: g → kg
+  const mmsKg = mms / 1000;
+  
+  // Qms = 2π × F0 × Mms / Rms
+  return (2 * Math.PI * f0 * mmsKg) / rms;
+}
+
+
+/**
+ * Calculate Qts (Total Q Factor)
+ * Formula: Qts = (Qes × Qms) / (Qes + Qms)
+ * 
+ * @param qes - Electrical Q factor
+ * @param qms - Mechanical Q factor
+ * @returns Total Q factor
+ */
+export function calculateQts(qes: number, qms: number): number {
+  // Qts = (Qes × Qms) / (Qes + Qms)
+  return (qes * qms) / (qes + qms);
+}

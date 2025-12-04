@@ -10,6 +10,26 @@ interface TSParameterState {
   airDensity: string;
   power: string;
   rms: string;
+  
+  // 振幅・音圧計算用
+  spl: string;
+  frequency: string;
+  micDistance: string;
+  inputVoltage: string;
+  
+  // 薄膜パターン用
+  volumeResistivity: string;
+  lineWidth: string;
+  lineThickness: string;
+  lineLength: string;
+  
+  // Xmax計算用
+  vcWindingWidth: string;
+  plateThickness: string;
+  
+  // 開管共鳴用
+  soundSpeed: string;
+  tubeLength: string;
 }
 
 interface SPLState {
@@ -52,9 +72,29 @@ const defaultTSParameterState: TSParameterState = {
   bl: '',
   re: '',
   effectiveRadius: '',
-  airDensity: '1.184',
+  airDensity: '1.29',
   power: '',
   rms: '',
+  
+  // 振幅・音圧計算用
+  spl: '',
+  frequency: '',
+  micDistance: '1',
+  inputVoltage: '',
+  
+  // 薄膜パターン用
+  volumeResistivity: '',
+  lineWidth: '',
+  lineThickness: '',
+  lineLength: '',
+  
+  // Xmax計算用
+  vcWindingWidth: '',
+  plateThickness: '',
+  
+  // 開管共鳴用
+  soundSpeed: '346.1',
+  tubeLength: '',
 };
 
 const defaultSPLState: SPLState = {
