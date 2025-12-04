@@ -2,7 +2,7 @@
  * Xmax Calculations (German Method)
  */
 
-import type { XmaxParams, XmaxResult } from '../types/xmax';
+import type { XmaxResult } from '../types/xmax';
 
 /**
  * Calculate Xmax using the German method

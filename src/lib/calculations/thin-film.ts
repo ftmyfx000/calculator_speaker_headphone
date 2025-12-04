@@ -2,7 +2,7 @@
  * Thin Film Resistance Calculations
  */
 
-import type { ThinFilmResistanceParams, ThinFilmResistanceResult } from '../types/thin-film';
+import type { ThinFilmResistanceResult } from '../types/thin-film';
 
 /**
  * Calculate thin film resistance

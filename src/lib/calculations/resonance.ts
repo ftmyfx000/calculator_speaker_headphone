@@ -2,7 +2,7 @@
  * Open Tube Resonance Calculations
  */
 
-import type { OpenTubeResonanceParams, OpenTubeResonanceResult } from '../types/resonance';
+import type { OpenTubeResonanceResult } from '../types/resonance';
 
 /**
  * Calculate open tube resonance frequencies

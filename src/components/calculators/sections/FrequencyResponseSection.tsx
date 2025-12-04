@@ -48,7 +48,6 @@ export const FrequencyResponseSection: React.FC = () => {
 
   // State for calculation results
   const [frequencyResponseData, setFrequencyResponseData] = useState<any[]>([]);
-  const [f0, setF0] = useState<number | null>(null);
 
   // Helper function to parse numeric input
   const parseNumeric = (value: string): number | null => {
@@ -119,9 +118,8 @@ export const FrequencyResponseSection: React.FC = () => {
 
   // Reactive calculation logic
   useEffect(() => {
-    setF0(f0Calculated);
     setFrequencyResponseData(frequencyResponseCalculated);
-  }, [f0Calculated, frequencyResponseCalculated]);
+  }, [frequencyResponseCalculated]);
 
   // Memoize chart data
   const chartData = useMemo(() => {
