@@ -187,7 +187,7 @@ export const TSParameterCalculator: React.FC = () => {
           />
           <HelpTooltip content="スピーカーに入力する電力（ワット数）です。" />
         </div>
-      </div>
+      </section>
 
       <section className="bg-white rounded-lg shadow p-4 sm:p-6" aria-labelledby="results-section-title" aria-live="polite">
         <h3 className="text-base sm:text-lg font-semibold text-gray-800 mb-3 sm:mb-4" id="results-section-title">計算結果</h3>

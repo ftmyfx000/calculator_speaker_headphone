@@ -253,7 +253,7 @@ export const SPLCalculator: React.FC = () => {
           />
           <HelpTooltip content="特定の周波数でのSPLを計算する場合に入力します。" />
         </div>
-      </div>
+      </section>
 
       <section className="bg-white rounded-lg shadow p-4 sm:p-6 mb-4 sm:mb-6" aria-labelledby="results-section-title" aria-live="polite">
         <h3 className="text-base sm:text-lg font-semibold text-gray-800 mb-3 sm:mb-4" id="results-section-title">計算結果</h3>
