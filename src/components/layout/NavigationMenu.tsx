@@ -7,8 +7,19 @@ interface Calculator {
 }
 
 const calculators: Calculator[] = [
-  { id: 'ts-parameters', name: 'TSパラメータ計算', path: '/ts-parameters' },
-  { id: 'spl', name: 'SPL計算', path: '/spl' },
+  { id: 'f0', name: 'F0計算', path: '/f0' },
+  { id: 'air-load-mass', name: '空気負荷質量の計算', path: '/air-load-mass' },
+  { id: 'input-voltage', name: '入力電圧計算', path: '/input-voltage' },
+  { id: 'vas', name: 'Vas計算', path: '/vas' },
+  { id: 'qes', name: 'Qes計算', path: '/qes' },
+  { id: 'qms', name: 'Qms計算', path: '/qms' },
+  { id: 'qts', name: 'Qts計算', path: '/qts' },
+  { id: 'amplitude', name: '振幅の計算', path: '/amplitude' },
+  { id: 'spl', name: '音圧の計算', path: '/spl' },
+  { id: 'frequency-response', name: '低音域音圧計算', path: '/frequency-response' },
+  { id: 'thin-film', name: '薄膜パターンの抵抗値計算', path: '/thin-film' },
+  { id: 'xmax', name: 'ドイツのXmax計算', path: '/xmax' },
+  { id: 'open-tube', name: '開管の気中共鳴周波数計算', path: '/open-tube' },
   { id: 'crossover', name: 'クロスオーバーネットワーク計算', path: '/crossover' },
 ];
 
