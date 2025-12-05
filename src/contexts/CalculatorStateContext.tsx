@@ -25,7 +25,7 @@ interface TSParameterState {
   resistance: string;
   calculationMode: 'resistance' | 'lineWidth' | 'lineThickness' | 'lineLength' | 'volumeResistivity';
   materialPresetMode: 'preset' | 'custom';
-  selectedMaterial: string | null;
+  selectedMaterial: string | undefined;
   
   // Xmax計算用
   vcWindingWidth: string;
@@ -94,7 +94,7 @@ const defaultTSParameterState: TSParameterState = {
   resistance: '',
   calculationMode: 'resistance',
   materialPresetMode: 'custom',
-  selectedMaterial: null,
+  selectedMaterial: undefined,
   
   // Xmax計算用
   vcWindingWidth: '',
