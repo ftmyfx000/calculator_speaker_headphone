@@ -33,7 +33,9 @@
   - Ask user if any issues arise
 -
 
-- [ ] 3. Deploy to Netlify via Git Desktop
+- [x] 3. Deploy to Netlify via Git Desktop
+
+
 
   - Commit all changes with descriptive message
   - Push to repository using Git Desktop

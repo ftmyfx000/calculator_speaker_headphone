@@ -13,7 +13,6 @@ import {
 import { useCalculatorState } from '../../../contexts/CalculatorStateContext';
 import { CalculationModeSelector } from '../CalculationModeSelector';
 import { VolumeResistivityInput } from '../VolumeResistivityInput';
-import type { CalculationMode } from '../../../lib/types/thin-film';
 
 /**
  * 薄膜パターン抵抗値計算セクションコンポーネント（拡張版）
@@ -53,12 +52,6 @@ export const ThinFilmResistanceSection: React.FC = () => {
   const parseNumeric = (value: string): number | null => {
     const parsed = parseFloat(value);
     return isNaN(parsed) || value.trim() === '' ? null : parsed;
-  };
-
-  // Validation helper
-  const isValidPositive = (value: string): boolean => {
-    const num = parseNumeric(value);
-    return num !== null && num > 0;
   };
 
   // Get validation errors
