@@ -9,7 +9,7 @@ interface VolumeResistivityInputProps {
   disabled?: boolean;
   presetMode: MaterialPresetMode;
   onPresetModeChange: (mode: MaterialPresetMode) => void;
-  selectedMaterial?: string;
+  selectedMaterial?: string | null;
   onMaterialChange: (material: string | undefined) => void;
 }
 
