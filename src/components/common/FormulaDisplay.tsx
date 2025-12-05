@@ -9,13 +9,35 @@ interface VariableDefinition {
 interface FormulaDisplayProps {
   formula: string;
   variables?: VariableDefinition[];
+  highlightSymbol?: string;
 }
 
 export const FormulaDisplay: React.FC<FormulaDisplayProps> = ({
   formula,
   variables = [],
+  highlightSymbol,
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
+
+  // Function to render formula with highlighted symbol
+  const renderFormula = () => {
+    if (!highlightSymbol) {
+      return formula;
+    }
+
+    // Split formula by the highlight symbol and wrap it with highlighting
+    const parts = formula.split(new RegExp(`(${highlightSymbol}(?![a-zA-Z]))`));
+    return parts.map((part, index) => {
+      if (part === highlightSymbol) {
+        return (
+          <span key={index} className="bg-yellow-200 font-bold px-1 rounded">
+            {part}
+          </span>
+        );
+      }
+      return <span key={index}>{part}</span>;
+    });
+  };
 
   return (
     <div className="mb-3 sm:mb-4 p-3 sm:p-4 bg-blue-50 rounded-md border border-blue-200">
@@ -23,7 +45,7 @@ export const FormulaDisplay: React.FC<FormulaDisplayProps> = ({
         <div className="flex-1 min-w-0">
           <h4 className="text-xs sm:text-sm font-semibold text-blue-900 mb-2">計算式</h4>
           <div className="font-mono text-xs sm:text-sm text-blue-800 bg-white p-2 rounded border border-blue-100 overflow-x-auto">
-            {formula}
+            {renderFormula()}
           </div>
         </div>
         {variables.length > 0 && (

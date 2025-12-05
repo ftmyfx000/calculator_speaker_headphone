@@ -1,16 +1,25 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { InputField } from '../../common/InputField';
 import { ResultDisplay } from '../../common/ResultDisplay';
 import { FormulaDisplay } from '../../common/FormulaDisplay';
 import { HelpTooltip } from '../../common/HelpTooltip';
-import { calculateThinFilmResistance } from '../../../lib/calculations/thin-film';
+import {
+  calculateResistance,
+  calculateLineWidth,
+  calculateLineThickness,
+  calculateLineLength,
+  calculateVolumeResistivity,
+} from '../../../lib/calculations/thin-film';
 import { useCalculatorState } from '../../../contexts/CalculatorStateContext';
+import { CalculationModeSelector } from '../CalculationModeSelector';
+import { VolumeResistivityInput } from '../VolumeResistivityInput';
+import type { CalculationMode } from '../../../lib/types/thin-film';
 
 /**
- * 薄膜パターン抵抗値計算セクションコンポーネント
+ * 薄膜パターン抵抗値計算セクションコンポーネント（拡張版）
  * 
- * 薄膜抵抗パターンの抵抗値を計算します。
- * 体積抵抗率、線幅、線厚、線長から計算されます。
+ * 薄膜抵抗パターンの任意のパラメータを計算します。
+ * 計算モードを選択することで、抵抗値、線幅、線厚、線長、体積抵抗率のいずれかを計算できます。
  * 
  * @component
  * @example
@@ -20,9 +29,9 @@ import { useCalculatorState } from '../../../contexts/CalculatorStateContext';
  * 
  * @remarks
  * - 計算式: R = ρ × L / (W × T)
- * - 体積抵抗率は科学的記数法（例: 1.5e-6）で入力できます
- * - 線の寸法（幅、厚さ、長さ）はmmからmに自動変換されます
- * - 結果はΩ（オーム）で表示されます
+ * - 体積抵抗率は10⁻⁸ Ω·m単位で入力します
+ * - 線の寸法（幅、厚さ、長さ）はmm単位で入力します
+ * - 材料プリセットから体積抵抗率を選択できます
  * 
  * @returns 薄膜パターン抵抗値計算セクションのReactコンポーネント
  */
@@ -31,130 +40,284 @@ export const ThinFilmResistanceSection: React.FC = () => {
   const tsState = states.tsParameters;
 
   // Get values from context
+  const calculationMode = tsState.calculationMode;
   const volumeResistivity = tsState.volumeResistivity;
   const lineWidth = tsState.lineWidth;
   const lineThickness = tsState.lineThickness;
   const lineLength = tsState.lineLength;
+  const resistance = tsState.resistance;
+  const materialPresetMode = tsState.materialPresetMode;
+  const selectedMaterial = tsState.selectedMaterial;
 
-  // Setter functions
-  const setVolumeResistivity = (value: string) => updateTSParameterState({ volumeResistivity: value });
-  const setLineWidth = (value: string) => updateTSParameterState({ lineWidth: value });
-  const setLineThickness = (value: string) => updateTSParameterState({ lineThickness: value });
-  const setLineLength = (value: string) => updateTSParameterState({ lineLength: value });
-
-  // State for calculation results
-  const [resistance, setResistance] = useState<number | null>(null);
-
-  // Helper function to parse numeric input (supports scientific notation)
+  // Helper function to parse numeric input
   const parseNumeric = (value: string): number | null => {
     const parsed = parseFloat(value);
     return isNaN(parsed) || value.trim() === '' ? null : parsed;
   };
 
+  // Validation helper
+  const isValidPositive = (value: string): boolean => {
+    const num = parseNumeric(value);
+    return num !== null && num > 0;
+  };
+
+  // Get validation errors
+  const getValidationError = (value: string, fieldName: string): string | null => {
+    if (value.trim() === '') return null;
+    const num = parseNumeric(value);
+    if (num === null) return `${fieldName}は数値を入力してください`;
+    if (num <= 0) return `${fieldName}は正の値を入力してください`;
+    return null;
+  };
+
   // Reactive calculation logic
   useEffect(() => {
-    const volumeResistivityNum = parseNumeric(volumeResistivity);
-    const lineWidthNum = parseNumeric(lineWidth);
-    const lineThicknessNum = parseNumeric(lineThickness);
-    const lineLengthNum = parseNumeric(lineLength);
+    try {
+      // Convert volume resistivity from 10⁻⁸ Ω·m to Ω·m
+      const volumeResistivityNum = parseNumeric(volumeResistivity);
+      const volumeResistivityOhmM = volumeResistivityNum !== null ? volumeResistivityNum * 1e-8 : null;
+      
+      // Convert dimensions from mm to m
+      const lineWidthNum = parseNumeric(lineWidth);
+      const lineWidthM = lineWidthNum !== null ? lineWidthNum / 1000 : null;
+      
+      const lineThicknessNum = parseNumeric(lineThickness);
+      const lineThicknessM = lineThicknessNum !== null ? lineThicknessNum / 1000 : null;
+      
+      const lineLengthNum = parseNumeric(lineLength);
+      const lineLengthM = lineLengthNum !== null ? lineLengthNum / 1000 : null;
+      
+      const resistanceNum = parseNumeric(resistance);
 
-    if (
-      volumeResistivityNum !== null &&
-      lineWidthNum !== null &&
-      lineThicknessNum !== null &&
-      lineLengthNum !== null &&
-      volumeResistivityNum > 0 &&
-      lineWidthNum > 0 &&
-      lineThicknessNum > 0 &&
-      lineLengthNum > 0
-    ) {
-      const result = calculateThinFilmResistance(
-        volumeResistivityNum,
-        lineWidthNum,
-        lineThicknessNum,
-        lineLengthNum
-      );
-      setResistance(result.resistance);
-    } else {
-      setResistance(null);
+      // Perform calculation based on mode
+      switch (calculationMode) {
+        case 'resistance':
+          if (volumeResistivityOhmM !== null && volumeResistivityOhmM > 0 &&
+              lineLengthM !== null && lineLengthM > 0 &&
+              lineWidthM !== null && lineWidthM > 0 &&
+              lineThicknessM !== null && lineThicknessM > 0) {
+            const result = calculateResistance(volumeResistivityOhmM, lineLengthM, lineWidthM, lineThicknessM);
+            updateTSParameterState({ resistance: result.toFixed(6) });
+          } else {
+            updateTSParameterState({ resistance: '' });
+          }
+          break;
+
+        case 'lineWidth':
+          if (volumeResistivityOhmM !== null && volumeResistivityOhmM > 0 &&
+              lineLengthM !== null && lineLengthM > 0 &&
+              resistanceNum !== null && resistanceNum > 0 &&
+              lineThicknessM !== null && lineThicknessM > 0) {
+            const resultM = calculateLineWidth(volumeResistivityOhmM, lineLengthM, resistanceNum, lineThicknessM);
+            const resultMm = resultM * 1000;
+            updateTSParameterState({ lineWidth: resultMm.toFixed(6) });
+          } else {
+            updateTSParameterState({ lineWidth: '' });
+          }
+          break;
+
+        case 'lineThickness':
+          if (volumeResistivityOhmM !== null && volumeResistivityOhmM > 0 &&
+              lineLengthM !== null && lineLengthM > 0 &&
+              resistanceNum !== null && resistanceNum > 0 &&
+              lineWidthM !== null && lineWidthM > 0) {
+            const resultM = calculateLineThickness(volumeResistivityOhmM, lineLengthM, resistanceNum, lineWidthM);
+            const resultMm = resultM * 1000;
+            updateTSParameterState({ lineThickness: resultMm.toFixed(6) });
+          } else {
+            updateTSParameterState({ lineThickness: '' });
+          }
+          break;
+
+        case 'lineLength':
+          if (resistanceNum !== null && resistanceNum > 0 &&
+              lineWidthM !== null && lineWidthM > 0 &&
+              lineThicknessM !== null && lineThicknessM > 0 &&
+              volumeResistivityOhmM !== null && volumeResistivityOhmM > 0) {
+            const resultM = calculateLineLength(resistanceNum, lineWidthM, lineThicknessM, volumeResistivityOhmM);
+            const resultMm = resultM * 1000;
+            updateTSParameterState({ lineLength: resultMm.toFixed(6) });
+          } else {
+            updateTSParameterState({ lineLength: '' });
+          }
+          break;
+
+        case 'volumeResistivity':
+          if (resistanceNum !== null && resistanceNum > 0 &&
+              lineWidthM !== null && lineWidthM > 0 &&
+              lineThicknessM !== null && lineThicknessM > 0 &&
+              lineLengthM !== null && lineLengthM > 0) {
+            const resultOhmM = calculateVolumeResistivity(resistanceNum, lineWidthM, lineThicknessM, lineLengthM);
+            const result1e8 = resultOhmM / 1e-8;
+            updateTSParameterState({ volumeResistivity: result1e8.toFixed(6) });
+          } else {
+            updateTSParameterState({ volumeResistivity: '' });
+          }
+          break;
+      }
+    } catch (error) {
+      // Handle calculation errors silently
+      console.error('Calculation error:', error);
     }
-  }, [volumeResistivity, lineWidth, lineThickness, lineLength]);
+  }, [calculationMode, volumeResistivity, lineWidth, lineThickness, lineLength, resistance]);
+
+  // Get highlight symbol for formula
+  const getHighlightSymbol = (): string => {
+    switch (calculationMode) {
+      case 'resistance': return 'R';
+      case 'lineWidth': return 'W';
+      case 'lineThickness': return 'T';
+      case 'lineLength': return 'L';
+      case 'volumeResistivity': return 'ρ';
+      default: return '';
+    }
+  };
 
   return (
     <section className="bg-white rounded-lg shadow p-4 sm:p-6 mb-4 sm:mb-6" aria-labelledby="thin-film-section-title" role="region" aria-live="polite">
       <h3 className="text-base sm:text-lg font-semibold text-gray-800 mb-3 sm:mb-4" id="thin-film-section-title">
-        薄膜パターンの抵抗値計算
+        薄膜パターンの抵抗値計算（拡張版）
       </h3>
+
+      <CalculationModeSelector
+        selectedMode={calculationMode}
+        onChange={(mode) => updateTSParameterState({ calculationMode: mode })}
+      />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
         <div>
-          <h4 className="text-sm font-medium text-gray-700 mb-2">入力値</h4>
+          <h4 className="text-sm font-medium text-gray-700 mb-2">
+            {calculationMode === 'resistance' ? '入力値' : '入力値（計算に使用）'}
+          </h4>
           
-          <div className="flex items-center gap-2">
-            <InputField
-              label="体積抵抗率"
-              value={volumeResistivity}
-              onChange={setVolumeResistivity}
-              unit="Ω·m"
-              id="volume-resistivity-input"
-            />
-            <HelpTooltip content="材料の体積抵抗率。科学的記数法（例: 1.5e-6）での入力も可能です。" />
-          </div>
+          {/* Volume Resistivity */}
+          {calculationMode !== 'volumeResistivity' ? (
+            <div className="flex items-center gap-2">
+              <VolumeResistivityInput
+                value={volumeResistivity}
+                onChange={(value) => updateTSParameterState({ volumeResistivity: value })}
+                isOutput={false}
+                presetMode={materialPresetMode}
+                onPresetModeChange={(mode) => updateTSParameterState({ materialPresetMode: mode })}
+                selectedMaterial={selectedMaterial}
+                onMaterialChange={(material) => updateTSParameterState({ selectedMaterial: material })}
+              />
+              <HelpTooltip content="材料の体積抵抗率。プリセットから選択するか、カスタム値を入力できます。" />
+            </div>
+          ) : null}
 
-          <div className="flex items-center gap-2">
-            <InputField
-              label="線幅"
-              value={lineWidth}
-              onChange={setLineWidth}
-              unit="mm"
-              id="line-width-input"
-            />
-            <HelpTooltip content="薄膜パターンの線幅です。" />
-          </div>
+          {/* Line Width */}
+          {calculationMode !== 'lineWidth' ? (
+            <div className="flex items-center gap-2">
+              <InputField
+                label="線幅"
+                value={lineWidth}
+                onChange={(value) => updateTSParameterState({ lineWidth: value })}
+                unit="mm"
+                id="line-width-input"
+                error={getValidationError(lineWidth, '線幅')}
+              />
+              <HelpTooltip content="薄膜パターンの線幅です。" />
+            </div>
+          ) : null}
 
-          <div className="flex items-center gap-2">
-            <InputField
-              label="線厚"
-              value={lineThickness}
-              onChange={setLineThickness}
-              unit="mm"
-              id="line-thickness-input"
-            />
-            <HelpTooltip content="薄膜パターンの厚さです。" />
-          </div>
+          {/* Line Thickness */}
+          {calculationMode !== 'lineThickness' ? (
+            <div className="flex items-center gap-2">
+              <InputField
+                label="線厚"
+                value={lineThickness}
+                onChange={(value) => updateTSParameterState({ lineThickness: value })}
+                unit="mm"
+                id="line-thickness-input"
+                error={getValidationError(lineThickness, '線厚')}
+              />
+              <HelpTooltip content="薄膜パターンの厚さです。" />
+            </div>
+          ) : null}
 
-          <div className="flex items-center gap-2">
-            <InputField
-              label="線長"
-              value={lineLength}
-              onChange={setLineLength}
-              unit="mm"
-              id="line-length-input"
-            />
-            <HelpTooltip content="薄膜パターンの長さです。" />
-          </div>
+          {/* Line Length */}
+          {calculationMode !== 'lineLength' ? (
+            <div className="flex items-center gap-2">
+              <InputField
+                label="線長"
+                value={lineLength}
+                onChange={(value) => updateTSParameterState({ lineLength: value })}
+                unit="mm"
+                id="line-length-input"
+                error={getValidationError(lineLength, '線長')}
+              />
+              <HelpTooltip content="薄膜パターンの長さです。" />
+            </div>
+          ) : null}
+
+          {/* Resistance */}
+          {calculationMode !== 'resistance' ? (
+            <div className="flex items-center gap-2">
+              <InputField
+                label="抵抗値"
+                value={resistance}
+                onChange={(value) => updateTSParameterState({ resistance: value })}
+                unit="Ω"
+                id="resistance-input"
+                error={getValidationError(resistance, '抵抗値')}
+              />
+              <HelpTooltip content="薄膜パターンの抵抗値です。" />
+            </div>
+          ) : null}
         </div>
 
         <div>
-          <h4 className="text-sm font-medium text-gray-700 mb-2">単位変換</h4>
-          <ResultDisplay
-            label="線幅"
-            value={parseNumeric(lineWidth) !== null ? parseNumeric(lineWidth)! / 1000 : null}
-            unit="m"
-            precision={6}
-          />
-          <ResultDisplay
-            label="線厚"
-            value={parseNumeric(lineThickness) !== null ? parseNumeric(lineThickness)! / 1000 : null}
-            unit="m"
-            precision={6}
-          />
-          <ResultDisplay
-            label="線長"
-            value={parseNumeric(lineLength) !== null ? parseNumeric(lineLength)! / 1000 : null}
-            unit="m"
-            precision={6}
-          />
+          <h4 className="text-sm font-medium text-gray-700 mb-2">計算結果</h4>
+          
+          {/* Output based on calculation mode */}
+          {calculationMode === 'resistance' && (
+            <ResultDisplay
+              label="抵抗値"
+              value={parseNumeric(resistance)}
+              unit="Ω"
+              precision={6}
+            />
+          )}
+          
+          {calculationMode === 'lineWidth' && (
+            <ResultDisplay
+              label="線幅"
+              value={parseNumeric(lineWidth)}
+              unit="mm"
+              precision={6}
+            />
+          )}
+          
+          {calculationMode === 'lineThickness' && (
+            <ResultDisplay
+              label="線厚"
+              value={parseNumeric(lineThickness)}
+              unit="mm"
+              precision={6}
+            />
+          )}
+          
+          {calculationMode === 'lineLength' && (
+            <ResultDisplay
+              label="線長"
+              value={parseNumeric(lineLength)}
+              unit="mm"
+              precision={6}
+            />
+          )}
+          
+          {calculationMode === 'volumeResistivity' && (
+            <VolumeResistivityInput
+              value={volumeResistivity}
+              onChange={(value) => updateTSParameterState({ volumeResistivity: value })}
+              isOutput={true}
+              presetMode={materialPresetMode}
+              onPresetModeChange={(mode) => updateTSParameterState({ materialPresetMode: mode })}
+              selectedMaterial={selectedMaterial}
+              onMaterialChange={(material) => updateTSParameterState({ selectedMaterial: material })}
+            />
+          )}
         </div>
       </div>
 
@@ -168,12 +331,7 @@ export const ThinFilmResistanceSection: React.FC = () => {
             { symbol: 'W', description: '線幅', unit: 'm' },
             { symbol: 'T', description: '線厚', unit: 'm' },
           ]}
-        />
-        <ResultDisplay
-          label="抵抗値"
-          value={resistance}
-          unit="Ω"
-          precision={6}
+          highlightSymbol={getHighlightSymbol()}
         />
       </div>
     </section>
