@@ -10,7 +10,7 @@ interface VolumeResistivityInputProps {
   presetMode: MaterialPresetMode;
   onPresetModeChange: (mode: MaterialPresetMode) => void;
   selectedMaterial?: string | null;
-  onMaterialChange: (material: string | undefined) => void;
+  onMaterialChange: (material: string | null) => void;
 }
 
 export const VolumeResistivityInput: React.FC<VolumeResistivityInputProps> = ({
@@ -26,7 +26,7 @@ export const VolumeResistivityInput: React.FC<VolumeResistivityInputProps> = ({
   const handleMaterialSelect = (materialName: string) => {
     if (materialName === 'custom') {
       onPresetModeChange('custom');
-      onMaterialChange(undefined);
+      onMaterialChange(null);
     } else {
       onPresetModeChange('preset');
       onMaterialChange(materialName);
