@@ -55,12 +55,12 @@ export const ThinFilmResistanceSection: React.FC = () => {
   };
 
   // Get validation errors
-  const getValidationError = (value: string, fieldName: string): string | null => {
-    if (value.trim() === '') return null;
+  const getValidationError = (value: string, fieldName: string): string | undefined => {
+    if (value.trim() === '') return undefined;
     const num = parseNumeric(value);
     if (num === null) return `${fieldName}は数値を入力してください`;
     if (num <= 0) return `${fieldName}は正の値を入力してください`;
-    return null;
+    return undefined;
   };
 
   // Reactive calculation logic
