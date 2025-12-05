@@ -46,7 +46,7 @@ export const ThinFilmResistanceSection: React.FC = () => {
   const lineLength = tsState.lineLength;
   const resistance = tsState.resistance;
   const materialPresetMode = tsState.materialPresetMode;
-  const selectedMaterial = tsState.selectedMaterial;
+  const selectedMaterial: string | undefined = tsState.selectedMaterial;
 
   // Helper function to parse numeric input
   const parseNumeric = (value: string): number | null => {
