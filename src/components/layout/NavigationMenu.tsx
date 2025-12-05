@@ -21,6 +21,7 @@ const calculators: Calculator[] = [
   { id: 'xmax', name: 'ドイツのXmax計算', path: '/xmax' },
   { id: 'open-tube', name: '開管の気中共鳴周波数計算', path: '/open-tube' },
   { id: 'crossover', name: 'クロスオーバーネットワーク計算', path: '/crossover' },
+  { id: 'box-volume', name: 'BOX容積計算', path: '/box-volume' },
 ];
 
 export function NavigationMenu() {

@@ -15,6 +15,7 @@ import {
   ThinFilmResistancePage,
   XmaxCalculationPage,
   OpenTubeResonancePage,
+  BoxVolumeCalculatorPage,
 } from './components/calculators/pages';
 import { CalculatorStateProvider } from './contexts/CalculatorStateContext';
 
@@ -47,6 +48,7 @@ function App() {
             <Route path="/xmax" element={<XmaxCalculationPage />} />
             <Route path="/open-tube" element={<OpenTubeResonancePage />} />
             <Route path="/crossover" element={<CrossoverNetworkCalculator />} />
+            <Route path="/box-volume" element={<BoxVolumeCalculatorPage />} />
           </Routes>
         </Layout>
       </Router>

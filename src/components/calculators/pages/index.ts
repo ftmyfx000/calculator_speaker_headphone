@@ -11,3 +11,4 @@ export { FrequencyResponsePage } from './FrequencyResponsePage';
 export { ThinFilmResistancePage } from './ThinFilmResistancePage';
 export { XmaxCalculationPage } from './XmaxCalculationPage';
 export { OpenTubeResonancePage } from './OpenTubeResonancePage';
+export { BoxVolumeCalculatorPage } from './BoxVolumeCalculatorPage';
