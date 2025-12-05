@@ -192,8 +192,8 @@ export const ThinFilmResistanceSection: React.FC = () => {
                 isOutput={false}
                 presetMode={materialPresetMode}
                 onPresetModeChange={(mode) => updateTSParameterState({ materialPresetMode: mode })}
-                selectedMaterial={selectedMaterial as string | null}
-                onMaterialChange={(material) => updateTSParameterState({ selectedMaterial: material })}
+                selectedMaterial={selectedMaterial}
+                onMaterialChange={(material) => updateTSParameterState({ selectedMaterial: material ?? undefined })}
               />
               <HelpTooltip content="材料の体積抵抗率。プリセットから選択するか、カスタム値を入力できます。" />
             </div>
@@ -307,8 +307,8 @@ export const ThinFilmResistanceSection: React.FC = () => {
               isOutput={true}
               presetMode={materialPresetMode}
               onPresetModeChange={(mode) => updateTSParameterState({ materialPresetMode: mode })}
-              selectedMaterial={selectedMaterial as string | null}
-              onMaterialChange={(material) => updateTSParameterState({ selectedMaterial: material })}
+              selectedMaterial={selectedMaterial}
+              onMaterialChange={(material) => updateTSParameterState({ selectedMaterial: material ?? undefined })}
             />
           )}
         </div>
